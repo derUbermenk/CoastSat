@@ -60,7 +60,7 @@ inputs = {
         }
 
 # before downloading the images, check how many images are available for your inputs
-SDS_download.check_images_available(inputs);
+SDS_download.check_images_available(inputs)
 
 #%% 2. Retrieve images
 
