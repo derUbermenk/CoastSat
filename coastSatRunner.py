@@ -175,7 +175,10 @@ def assertfile_type_and_exists(file_path, expected_extension):
     else: 
         sys.exit((1, f"cant find file {file_path}"))
 
-
+def assert_dir_exists(dir_path):
+    exists = os.path.isdir(dir_path)
+    if not exists:
+        sys.exit((1,f"cant find dir {dir_path}"))
 
 def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     parser = argparse.ArgumentParser(
@@ -200,6 +203,15 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     except Exception as e:
         print(f"Error encountered: {e} \n Exiting") 
         sys.exit(1)
+
+    path_to_transects = args.transects
+    path_to_tides = args.tides
+    path_to_shoreline = args.ref_shoreline   
+
+    assert_dir_exists(args.saveDir)
+    assertfile_type_and_exists(path_to_transects, ".geojson")
+    assertfile_type_and_exists(path_to_tides, ".csv")
+    assertfile_type_and_exists(path_to_shoreline, ".pkl")
     
     coastSatRunner = CoastSatRunner(
     args.startDate,
@@ -208,9 +220,9 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     coordinates,
     args.sitename,
     args.epsg,
-    args.transects,
-    args.tides,
-    args.ref_shoreline
+    path_to_transects,
+    path_to_tides,
+    path_to_shoreline
     )
 
     return coastSatRunner
