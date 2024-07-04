@@ -6,8 +6,9 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import ast
 
-from coastsat import SDS_download, SDS_preprocess, SDS_shoreline, SDS_tools, SDS_transects
+from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
 
 class CoastSatRunner():
     def __init__(
@@ -31,9 +32,6 @@ class CoastSatRunner():
         self.path_to_transects = path_to_transects 
         self.path_to_tides = path_to_tides
         self.path_to_ref_shoreline = path_to_ref_shoreline
-
-        self.inputs = self.init_inputs()
-        self.settings = self.init_settings()
 
     def init_inputs(self):
         polygon = SDS_tools.smallest_rectangle([self.coordinates])
@@ -139,6 +137,9 @@ class CoastSatRunner():
         return df
 
     def run(self):
+        self.inputs = self.init_inputs()
+        self.settings = self.init_settings()
+
         # download images
         metadata = SDS_download.retrieve_images(self.inputs)
         settings = self.init_settings()
@@ -160,6 +161,22 @@ class CoastSatRunner():
         else:
             print(f"file saved in \n\t{save_path}")
 
+def assertfile_type_and_exists(file_path, expected_extension):
+    exists = os.path.isfile(file_path)
+    if exists:
+        _, extension = os.path.splitext(file_path)
+        is_correct_extension = extension == expected_extension
+
+        if is_correct_extension:
+            return True
+        else:
+            message = f"{file_path} has wrong extension. expected {expected_extension}"
+            sys.exit((1, message))
+    else: 
+        sys.exit((1, f"cant find file {file_path}"))
+
+
+
 def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     parser = argparse.ArgumentParser(
         prog="Coastsat",
@@ -174,18 +191,26 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     parser.add_argument("epsg")
     parser.add_argument("transects", help="path to transects geojson file")
     parser.add_argument("tides", help="path to tide data csv file")
+    parser.add_argument("ref_shoreline", help="path to ref shoreline")
 
     args = parser.parse_args(_args)
 
+    try:
+        coordinates = ast.literal_eval(args.coordinates)
+    except Exception as e:
+        print(f"Error encountered: {e} \n Exiting") 
+        sys.exit(1)
+    
     coastSatRunner = CoastSatRunner(
     args.startDate,
     args.endDate,
     args.saveDir,
-    args.coordinates,
+    coordinates,
     args.sitename,
     args.epsg,
     args.transects,
-    args.tides
+    args.tides,
+    args.ref_shoreline
     )
 
     return coastSatRunner
