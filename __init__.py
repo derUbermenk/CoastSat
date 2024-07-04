@@ -1,1 +1,1 @@
-from .coastSatRunner import initializeCoastSatRunner, CoastSatRunner
+from .coastSatRunner import initializeCoastSatRunner, assertfile_type_and_exists, CoastSatRunner
