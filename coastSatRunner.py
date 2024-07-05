@@ -226,3 +226,7 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     )
 
     return coastSatRunner
+
+if __name__ == "__main__":
+    coastSatRunner = initializeCoastSatRunner(sys.argv[1:])
+    coastSatRunner.run()
