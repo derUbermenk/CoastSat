@@ -3,6 +3,7 @@
 import argparse
 import pickle
 import pandas as pd
+import pytz
 import numpy as np
 import os
 import sys
@@ -36,7 +37,7 @@ class CoastSatRunner():
     def init_inputs(self):
         polygon = SDS_tools.smallest_rectangle([self.coordinates])
         dates = [self.startDate, self.endDate]
-        sat_list = ['L5','L7','L8']
+        sat_list = ['L5','L7','L8', 'S2']
         collection = 'C02'
 
         inputs = {
@@ -115,7 +116,7 @@ class CoastSatRunner():
     
     def tidal_correction(self, output, cross_distance):
         tide_data = pd.read_csv(self.path_to_tides , parse_dates=['dates'])
-        dates_ts = [pd.to_datetime(_).to_pydatetime() for _ in tide_data['dates']]
+        dates_ts = [pd.to_datetime(_).to_pydatetime() for _ in tide_data['dates'].dt.tz_localize(pytz.timezone('UTC'))]
         tides_ts = np.array(tide_data['tide'])
 
         dates_sat = output['dates']
@@ -148,7 +149,6 @@ class CoastSatRunner():
         transects = self.load_transect_geojson()
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
-
         # save to csv
         save_path = os.path.join(
             self.saveDir, f"{self.startDate}_{self.endDate}_data.csv"
