@@ -60,7 +60,7 @@ class CoastSatRunner():
             # general parameters:
             'cloud_thresh': 0.1,        # threshold on maximum cloud cover
             'dist_clouds': 300,         # ditance around clouds where shoreline can't be mapped
-            'output_epsg': 6637,       # epsg code of spatial reference system desired for the output
+            'output_epsg': self.epsg,       # epsg code of spatial reference system desired for the output
 
             # quality control:
             'check_detection': False,    # if True, shows each shoreline detection to the user for validation
