@@ -45,7 +45,7 @@ class CoastSatRunner():
             'dates': dates,
             'sat_list': sat_list,
             'sitename': self.sitename,
-            'filepath': self.saveDir,
+            'filepath': f"/data/{self.sitename}",
             'landsat_collection': collection
         }
 
