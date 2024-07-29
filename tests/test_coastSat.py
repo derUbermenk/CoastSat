@@ -40,11 +40,9 @@ def test_assertfile_type_and_exists():
         assert False 
 
 def test_initializeCoastSatRunner():
-    assert False
-
     startDate = "2024-01-01"
     endDate = "2024-02-01"
-    saveDir = "/data"
+    savePath = "/output/intersects.csv"
     coordinates = "[ \
         [144.79485033965136, 13.429388175797682], \
         [144.80045079197197, 13.428688997897156], \
@@ -60,7 +58,7 @@ def test_initializeCoastSatRunner():
     args = [
         startDate,
         endDate,
-        saveDir,
+        savePath,
         coordinates,
         sitename,
         epsg,
@@ -76,7 +74,7 @@ def test_initializeCoastSatRunner():
             assert isinstance(coastSatRunner, CoastSatRunner)
             assert coastSatRunner.startDate == startDate   
             assert coastSatRunner.endDate == endDate
-            assert coastSatRunner.saveDir == saveDir
+            assert coastSatRunner.savePath == savePath
             assert coastSatRunner.coordinates == [
                 [144.79485033965136, 13.429388175797682],
                 [144.80045079197197, 13.428688997897156],

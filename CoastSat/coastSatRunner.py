@@ -16,7 +16,7 @@ class CoastSatRunner():
         self,
         startDate,
         endDate,
-        saveDir,
+        savePath,
         coordinates,
         sitename,
         epsg,
@@ -26,7 +26,7 @@ class CoastSatRunner():
     ):
         self.startDate = startDate
         self.endDate = endDate
-        self.saveDir = saveDir
+        self.savePath = savePath 
         self.coordinates = coordinates
         self.sitename = sitename
         self.epsg = epsg
@@ -150,16 +150,13 @@ class CoastSatRunner():
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
         # save to csv
-        save_path = os.path.join(
-            self.saveDir, f"{self.startDate}_{self.endDate}_data.csv"
-        )
         try:
-            tidal_corrected_df.to_csv(save_path, sep=',')
+            tidal_corrected_df.to_csv(self.savePath, sep=',')
         except Exception as e:
             print(f"failed extracting data due to error \n\t{e}")
             sys.exit(1)
         else:
-            print(f"file saved in \n\t{save_path}")
+            print(f"file saved in \n\t{self.savePath}")
 
 def assertfile_type_and_exists(file_path, expected_extension):
     exists = os.path.isfile(file_path)
@@ -188,7 +185,7 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
 
     parser.add_argument("startDate", help="in YYYY-mm-dd format")
     parser.add_argument("endDate", help="in YYYY-mm-dd format")
-    parser.add_argument("saveDir", help="save dir of csv file")
+    parser.add_argument("save_path", help="save file path in csv")
     parser.add_argument("coordinates", help="an array of coordinates of the area polygon")
     parser.add_argument("sitename", help="sitename")
     parser.add_argument("epsg")
@@ -207,16 +204,17 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     path_to_transects = args.transects
     path_to_tides = args.tides
     path_to_shoreline = args.ref_shoreline   
+    save_path = args.save_path
 
-    assert_dir_exists(args.saveDir)
     assertfile_type_and_exists(path_to_transects, ".geojson")
     assertfile_type_and_exists(path_to_tides, ".csv")
     assertfile_type_and_exists(path_to_shoreline, ".pkl")
+    assertfile_type_and_exists(save_path, ".csv")
     
     coastSatRunner = CoastSatRunner(
     args.startDate,
     args.endDate,
-    args.saveDir,
+    args.save_path,
     coordinates,
     args.sitename,
     args.epsg,
