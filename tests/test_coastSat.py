@@ -40,6 +40,7 @@ def test_assertfile_type_and_exists():
         assert False 
 
 def test_initializeCoastSatRunner():
+    assert False
 
     startDate = "2024-01-01"
     endDate = "2024-02-01"
