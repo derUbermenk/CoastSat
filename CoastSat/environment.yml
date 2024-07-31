@@ -1,0 +1,9 @@
+name: coastsat
+channels:
+  - conda-forge
+dependencies:
+  - geopandas
+  - earthengine-api
+  - scikit-image
+  - matplotlib
+  - astropy
