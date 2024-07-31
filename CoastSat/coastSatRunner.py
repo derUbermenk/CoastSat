@@ -209,7 +209,7 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     assertfile_type_and_exists(path_to_transects, ".geojson")
     assertfile_type_and_exists(path_to_tides, ".csv")
     assertfile_type_and_exists(path_to_shoreline, ".pkl")
-    assertfile_type_and_exists(save_path, ".csv")
+    assertfile_type_and_exists(save_path, ".csv", assert_exist=False)
     
     coastSatRunner = CoastSatRunner(
     args.startDate,
