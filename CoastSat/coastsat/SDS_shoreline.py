@@ -89,7 +89,8 @@ def extract_shorelines(metadata, settings):
     sitename = settings['inputs']['sitename']
     filepath_data = settings['inputs']['filepath']
     collection = settings['inputs']['landsat_collection']
-    filepath_models = os.path.join(os.getcwd(), 'classification', 'models')
+    # filepath_models = os.path.join(os.getcwd(), 'classification', 'models')
+    filepath_models = os.path.join("/runner", 'classification', 'models')
     # initialise output structure
     output = dict([])
     # create a subfolder to store the .jpg images showing the detection
