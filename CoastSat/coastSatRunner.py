@@ -158,19 +158,19 @@ class CoastSatRunner():
         else:
             print(f"file saved in \n\t{self.savePath}")
 
-def assertfile_type_and_exists(file_path, expected_extension):
-    exists = os.path.isfile(file_path)
-    if exists:
-        _, extension = os.path.splitext(file_path)
-        is_correct_extension = extension == expected_extension
+def assertfile_type_and_exists(file_path, expected_extension, assert_exist = True):
+    if assert_exist:
+        exists = os.path.isfile(file_path)
+        if not exists:
+            sys.exit((1, f"cant find file {file_path}"))
 
-        if is_correct_extension:
-            return True
-        else:
-            message = f"{file_path} has wrong extension. expected {expected_extension}"
-            sys.exit((1, message))
-    else: 
-        sys.exit((1, f"cant find file {file_path}"))
+    _, extension = os.path.splitext(file_path)
+    is_correct_extension = extension == expected_extension
+    if is_correct_extension:
+        return True
+    else:
+        message = f"{file_path} has wrong extension. expected {expected_extension}"
+        sys.exit((1, message))
 
 def assert_dir_exists(dir_path):
     exists = os.path.isdir(dir_path)
