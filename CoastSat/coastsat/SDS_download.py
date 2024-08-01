@@ -82,7 +82,7 @@ def retrieve_images(inputs):
     
     # initialise connection with GEE server
     service_account = os.getenv('SERVICE_ACCOUNT_EMAIL') # see service account for email
-    credentials = ee.ServiceAccountCredentials(service_account, '/home/gcloud_cli_auth.json')
+    credentials = ee.ServiceAccountCredentials(service_account, '/gcloud_cli_auth.json')
     ee.Initialize(credentials)
 
     # check image availabiliy and retrieve list of images
@@ -550,7 +550,7 @@ def check_images_available(inputs):
         ee.ImageCollection('LANDSAT/LT05/C01/T1_TOA')
     except:
         service_account = os.getenv('SERVICE_ACCOUNT_EMAIL') # see service account for email
-        credentials = ee.ServiceAccountCredentials(service_account, '/home/gcloud_cli_auth.json')
+        credentials = ee.ServiceAccountCredentials(service_account, '/gcloud_cli_auth.json')
         ee.Initialize(credentials)
         
     print('Number of images available between %s and %s:'%(dates_str[0],dates_str[1]), end='\n')
