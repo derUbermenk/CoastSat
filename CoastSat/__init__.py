@@ -1,1 +1,2 @@
 from .coastSatRunner_fileBased import initializeCoastSatRunnerFileBased, assertfile_type_and_exists, CoastSatRunnerFileBased
+from .coastSatRunner_DB import initializeCoastSatRunnerDB, assertfile_type_and_exists, CoastSatRunnerDB

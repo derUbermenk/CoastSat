@@ -11,7 +11,7 @@ import ast
 
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
 
-class CoastSatRunner():
+class CoastSatRunnerDB():
     def __init__(
         self,
         startDate,
@@ -20,19 +20,12 @@ class CoastSatRunner():
         coordinates,
         sitename,
         epsg,
-        path_to_transects,
-        path_to_tides,
-        path_to_ref_shoreline
     ):
         self.startDate = startDate
         self.endDate = endDate
-        self.savePath = savePath 
         self.coordinates = coordinates
         self.sitename = sitename
         self.epsg = epsg
-        self.path_to_transects = path_to_transects 
-        self.path_to_tides = path_to_tides
-        self.path_to_ref_shoreline = path_to_ref_shoreline
 
     def init_inputs(self):
         polygon = SDS_tools.smallest_rectangle([self.coordinates])
@@ -177,7 +170,7 @@ def assert_dir_exists(dir_path):
     if not exists:
         sys.exit((1,f"cant find dir {dir_path}"))
 
-def initializeCoastSatRunner(_args) ->  CoastSatRunner:
+def initializeCoastSatRunnerDB(_args) ->  CoastSatRunner:
     parser = argparse.ArgumentParser(
         prog="Coastsat",
         description="process shoreline data"
@@ -226,5 +219,5 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     return coastSatRunner
 
 if __name__ == "__main__":
-    coastSatRunner = initializeCoastSatRunner(sys.argv[1:])
+    coastSatRunner = initializeCoastSatRunnerDB(sys.argv[1:])
     coastSatRunner.run()
