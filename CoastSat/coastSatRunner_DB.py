@@ -16,16 +16,16 @@ class CoastSatRunnerDB():
         self,
         startDate,
         endDate,
-        savePath,
-        coordinates,
         sitename,
-        epsg,
+        tides,
+        connstring
     ):
         self.startDate = startDate
         self.endDate = endDate
-        self.coordinates = coordinates
         self.sitename = sitename
-        self.epsg = epsg
+        self.tides = tides
+        self.connstring = connstring
+    
 
     def init_inputs(self):
         polygon = SDS_tools.smallest_rectangle([self.coordinates])
@@ -170,50 +170,28 @@ def assert_dir_exists(dir_path):
     if not exists:
         sys.exit((1,f"cant find dir {dir_path}"))
 
-def initializeCoastSatRunnerDB(_args) ->  CoastSatRunner:
+def initializeCoastSatRunnerDB(_args) ->  CoastSatRunnerDB:
     parser = argparse.ArgumentParser(
-        prog="Coastsat",
+        prog="Coastsat DB",
         description="process shoreline data"
     )    
 
     parser.add_argument("startDate", help="in YYYY-mm-dd format")
     parser.add_argument("endDate", help="in YYYY-mm-dd format")
-    parser.add_argument("save_path", help="save file path in csv")
-    parser.add_argument("coordinates", help="an array of coordinates of the area polygon")
     parser.add_argument("sitename", help="sitename")
-    parser.add_argument("epsg")
-    parser.add_argument("transects", help="path to transects geojson file")
     parser.add_argument("tides", help="path to tide data csv file")
-    parser.add_argument("ref_shoreline", help="path to ref shoreline")
+    parser.add_argument("connstring", help="db connstring")
 
     args = parser.parse_args(_args)
 
-    try:
-        coordinates = ast.literal_eval(args.coordinates)
-    except Exception as e:
-        print(f"Error encountered: {e} \n Exiting") 
-        sys.exit(1)
+    assertfile_type_and_exists(args.tides, ".csv")
 
-    path_to_transects = args.transects
-    path_to_tides = args.tides
-    path_to_shoreline = args.ref_shoreline   
-    save_path = args.save_path
-
-    assertfile_type_and_exists(path_to_transects, ".geojson")
-    assertfile_type_and_exists(path_to_tides, ".csv")
-    assertfile_type_and_exists(path_to_shoreline, ".pkl")
-    assertfile_type_and_exists(save_path, ".csv", assert_exist=False)
-    
-    coastSatRunner = CoastSatRunner(
-    args.startDate,
-    args.endDate,
-    args.save_path,
-    coordinates,
-    args.sitename,
-    args.epsg,
-    path_to_transects,
-    path_to_tides,
-    path_to_shoreline
+    coastSatRunner = CoastSatRunnerDB(
+        args.startDate,
+        args.endDate,
+        args.sitename,
+        args.tides,
+        args.connstring
     )
 
     return coastSatRunner

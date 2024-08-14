@@ -6,12 +6,14 @@ def test_initializeCoastSatRunner():
     endDate = "2024-02-01"
     sitename = "TEST1"
     tides = "/data/tides.csv"
+    connstring = "appropriate_db_connstring"
 
     args = [
         startDate,
         endDate,
         sitename,
-        tides
+        tides,
+        connstring
     ]
 
     with patch("os.path.isfile", return_value=True):
@@ -23,6 +25,7 @@ def test_initializeCoastSatRunner():
             assert coastSatRunner.endDate == endDate
             assert coastSatRunner.sitename == sitename
             assert coastSatRunner.tides == tides
+            assert coastSatRunner.connstring == connstring 
 
 def test_retrieve_area_geometry_coords_from_db():
     # init csRunner
