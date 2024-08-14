@@ -86,4 +86,11 @@ def test_initializeCoastSatRunner():
             assert coastSatRunner.path_to_transects == transects
             assert coastSatRunner.path_to_tides == tides
 
+def test_retrieve_area_geometry_from_db():
+    return
 
+def test_retrieve_baseline_geometry_from_db():
+    return
+
+def test_retrieve_transects_from_db():
+    return
