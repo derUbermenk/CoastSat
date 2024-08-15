@@ -28,10 +28,21 @@ def test_initializeCoastSatRunner():
             assert coastSatRunner.connstring == connstring 
 
 def test_retrieve_area_geometry_coords_from_db():
-    # init csRunner
-    csRunner = CoastSatRunner()
+    csRunner = CoastSatRunnerDB(
+        "2024-01-01",
+        "2024-02-01",
+        "TEST1",
+        "/data/tides.csv",
+        "postgresql://shoreline:shoreline@localhost:5436/shoreline"
+    )
 
-    expected_coordinates = []
+    expected_coordinates = [ 
+        [144.79485033965136, 13.429388175797682], 
+        [144.80045079197197, 13.428688997897156], 
+        [144.78536604893787, 13.42058047237599],  
+        [144.78098868383339, 13.421999744999741]  
+    ]
+
     coordinates = csRunner.retrieve_area_geometry_coords_from_db()
 
     assert expected_coordinates, coordinates
