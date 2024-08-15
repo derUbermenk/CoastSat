@@ -13,14 +13,14 @@ CREATE TABLE Shorelines (
 
 CREATE TABLE Profiles (
     id SERIAL PRIMARY KEY,
-    shoreline_id INT NOT NULL REFERENCES Shorelines(id) ON DELETE CASCADE,
+    shoreline_sitename VARCHAR(20) NOT NULL REFERENCES Shorelines(sitename) ON DELETE CASCADE,
     record_date DATE NOT NULL,
     geom geometry(MULTILINESTRING)
 ); 
 
 CREATE TABLE Transects (
     id SERIAL PRIMARY KEY,
-    shoreline_id INT NOT NULL REFERENCES Shorelines(id) ON DELETE CASCADE,
+    shoreline_sitename VARCHAR(20) NOT NULL REFERENCES Shorelines(sitename) ON DELETE CASCADE,
     geom geometry(LINESTRING)
 );
 

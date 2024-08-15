@@ -12,8 +12,6 @@ services:
     
   pgadmin_test:
     image: dpage/pgadmin4
-    depends_on:
-      - shoreline_db
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@shoreline.com 
       PGADMIN_DEFAULT_PASSWORD: admin 
