@@ -7,3 +7,5 @@ dependencies:
   - scikit-image
   - matplotlib
   - astropy
+  - SQLAlchemy
+  - psycopg2
