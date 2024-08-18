@@ -1,4 +1,4 @@
-from CoastSat import initializeCoastSatRunnerDB, assertfile_type_and_exists, CoastSatRunnerDB
+from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Shoreline
 from unittest.mock import Mock, patch
 
 def test_initializeCoastSatRunner():
