@@ -4,7 +4,7 @@ services:
     environment:
       - POSTGRES_USER=shoreline
       - POSTGRES_PASSWORD=shoreline
-      - POSTGRES_DB=shoreline
+      - POSTGRES_DB=shoreline_test
     ports:
       - "5436:5432"
     volumes:
