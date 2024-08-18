@@ -9,7 +9,22 @@ import os
 import sys
 import ast
 
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from geoalchemy2 import Geometry
+
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
+
+Base = declarative_base()
+
+class Shoreline(Base):
+    __tablename__ = 'shorelines'
+
+    sitename = Column(String, primary_key=True)
+    loc = Column(String)
+    baseline = Column(Geometry('LINESTRING'))
+    area = Column(Geometry('POLYGON'))
 
 class CoastSatRunnerDB():
     def __init__(
@@ -77,7 +92,7 @@ class CoastSatRunnerDB():
         }
 
         return settings
-
+    
     def extract_shorelines(self, metadata, settings):
         # extract shorelines from all images (also saves output.pkl and shorelines.kml)
         output = SDS_shoreline.extract_shorelines(metadata, settings)
