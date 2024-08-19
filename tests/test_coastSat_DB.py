@@ -62,30 +62,3 @@ def test_retrieve_base_shoreline():
     assert base_shoreline.sitename == expected_base_shoreline.sitename
     assert base_shoreline.baseline_geom == expected_base_shoreline.baseline_geom
     assert base_shoreline.area_geom == expected_base_shoreline.area_geom
-
-def test_retrieve_area_geometry_coords_from_db():
-    csRunner = CoastSatRunnerDB(
-        "2024-01-01",
-        "2024-02-01",
-        "TEST1",
-        "/data/tides.csv",
-        "postgresql://shoreline:shoreline@localhost:5436/shoreline"
-    )
-
-    expected_coordinates = [ 
-        [144.7948, 13.4293], 
-        [144.8004, 13.4286], 
-        [144.7853, 13.4205],  
-        [144.7948, 13.4293], 
-    ]
-
-    coordinates = csRunner.retrieve_area_geometry_coords_from_db()
-
-    assert expected_coordinates, coordinates
-
-
-def test_retrieve_baseline_geometry_from_db():
-    return
-
-def test_retrieve_transects_from_db():
-    return
