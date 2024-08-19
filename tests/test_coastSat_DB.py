@@ -1,4 +1,4 @@
-from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Shoreline
+from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Baseline 
 from unittest.mock import Mock, patch
 
 def test_initializeCoastSatRunner():
