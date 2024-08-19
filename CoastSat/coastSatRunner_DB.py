@@ -36,6 +36,11 @@ class CoastSatRunnerDB():
         self.sitename = sitename
         self.tides = tides
         self.connstring = connstring
+
+        base_shoreline = self.retrieve_base_shoreline() 
+
+        self.baseline_geom = base_shoreline.baseline_geom
+        self.area_geom = base_shoreline.area_geom
     
 
     def init_inputs(self):
