@@ -62,8 +62,7 @@ class CoastSatRunnerDB():
 
     def init_settings(self):
         # get reference shorline
-        with open(self.path_to_ref_shoreline, 'rb') as f:
-            ref_shoreline_coords = pickle.load(f)
+        ref_shoreline_coords = self.baseline_geom['coordinates']
 
         settings = {
             # general parameters:
