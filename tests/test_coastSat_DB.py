@@ -29,21 +29,21 @@ def test_initializeCoastSatRunner():
 
 def test_retrieve_base_shoreline():
     shoreline_baseline_coordinates = [
-            [1007671.020112160709687, 455030.685090125480201],
-            [1007738.149961497285403, 455136.269249796518125],
-            [1007735.60449628578499, 455475.019404369115364],
-            [1007659.86397591792047, 455679.772528785164468],
-            [1007582.069948134245351, 455898.714581696374808],
-            [1007518.585046245483682, 456095.360391221067403],
-            [1007308.360074182623066, 456271.509743563947268]
+            [1007671.0201, 455030.6850],
+            [1007738.1499, 455136.2692],
+            [1007735.6044, 455475.0194],
+            [1007659.8639, 455679.7725],
+            [1007582.0699, 455898.7145],
+            [1007518.5850, 456095.3603],
+            [1007308.3600, 456271.5097]
     ]
 
-    shoreline_area_coordinates=[[[ 
-        [144.79485033965136, 13.429388175797682], 
-        [144.80045079197197, 13.428688997897156], 
-        [144.78536604893787, 13.42058047237599],  
-        [144.78098868383339, 13.421999744999741]  
-    ]]]
+    shoreline_area_coordinates=[[ 
+        [144.7948, 13.4293], 
+        [144.8004, 13.4286], 
+        [144.7853, 13.4205],  
+        [144.7948, 13.4293], 
+    ]]
 
     expected_baseline = {"type":"LineString","coordinates": shoreline_baseline_coordinates}
     expected_area = {"type":"Polygon","coordinates": shoreline_area_coordinates}
@@ -60,8 +60,8 @@ def test_retrieve_base_shoreline():
 
     base_shoreline = csRunner.retrieve_base_shoreline()
     assert base_shoreline.sitename == expected_base_shoreline.sitename
-    assert base_shoreline.baseline == expected_base_shoreline.baseline
-    assert base_shoreline.area == expected_base_shoreline.area
+    assert base_shoreline.baseline_geom == expected_base_shoreline.baseline_geom
+    assert base_shoreline.area_geom == expected_base_shoreline.area_geom
 
 def test_retrieve_area_geometry_coords_from_db():
     csRunner = CoastSatRunnerDB(
@@ -73,10 +73,10 @@ def test_retrieve_area_geometry_coords_from_db():
     )
 
     expected_coordinates = [ 
-        [144.79485033965136, 13.429388175797682], 
-        [144.80045079197197, 13.428688997897156], 
-        [144.78536604893787, 13.42058047237599],  
-        [144.78098868383339, 13.421999744999741]  
+        [144.7948, 13.4293], 
+        [144.8004, 13.4286], 
+        [144.7853, 13.4205],  
+        [144.7948, 13.4293], 
     ]
 
     coordinates = csRunner.retrieve_area_geometry_coords_from_db()
