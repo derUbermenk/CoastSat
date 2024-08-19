@@ -44,7 +44,7 @@ class CoastSatRunnerDB():
     
 
     def init_inputs(self):
-        polygon = SDS_tools.smallest_rectangle([self.coordinates])
+        polygon = SDS_tools.smallest_rectangle(self.area_geom['coordinates'])
         dates = [self.startDate, self.endDate]
         sat_list = ['L5','L7','L8', 'S2']
         collection = 'C02'
