@@ -9,22 +9,18 @@ import os
 import sys
 import ast
 
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from shapely import wkb, geometry
+from sqlalchemy import create_engine, text 
+from sqlalchemy.orm import sessionmaker 
 from geoalchemy2 import Geometry
 
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
 
-Base = declarative_base()
-
-class Shoreline(Base):
-    __tablename__ = 'shorelines'
-
-    sitename = Column(String, primary_key=True)
-    loc = Column(String)
-    baseline = Column(Geometry('LINESTRING'))
-    area = Column(Geometry('POLYGON'))
+class Baseline():
+    def __init__(self, sitename: str, baseline_geom: dict, area_geom: dict) -> None:
+        self.sitename = sitename
+        self.baseline_geom = baseline_geom
+        self.area_geom = area_geom
 
 class CoastSatRunnerDB():
     def __init__(
@@ -144,6 +140,30 @@ class CoastSatRunnerDB():
             out_dict['Transect '+ key] = cross_distance_tidally_corrected[key]
         df = pd.DataFrame(out_dict)
         return df
+    
+    def retrieve_base_shoreline(self):
+        engine = create_engine(self.connstring)
+        session = sessionmaker(bind=engine)()
+
+        # shoreline = session.query(Shoreline).filter(Shoreline.sitename==self.sitename).one()
+        sql_query = text(
+            """
+                SELECT
+                    sitename,
+                    ST_AsGeoJSON(baseline) as baseline_geom,
+                    ST_AsGeoJSON(area) as area_geom
+                FROM shorelines
+                WHERE sitename = :sitename
+            """
+        )
+        result = session.execute(sql_query, {"sitename": self.sitename})
+        row = result.fetchone()
+
+        return Baseline(
+            row[0],
+            ast.literal_eval(row[1]),
+            ast.literal_eval(row[2])
+        ) 
 
     def run(self):
         self.inputs = self.init_inputs()
