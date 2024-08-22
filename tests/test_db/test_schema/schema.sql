@@ -19,17 +19,18 @@ CREATE TABLE Profiles (
 ); 
 
 CREATE TABLE Transects (
-    id SERIAL PRIMARY KEY,
+    id INT,
     shoreline_sitename VARCHAR(20) NOT NULL REFERENCES Shorelines(sitename) ON DELETE CASCADE,
-    geom geometry(LINESTRING)
+    geom geometry(LINESTRING),
+    PRIMARY KEY(id, shoreline_sitename)
 );
 
 CREATE TABLE Intersects (
-    id SERIAL PRIMARY KEY,
+    id INT,
     profile_id INT NOT NULL REFERENCES Profiles(id) ON DELETE CASCADE,
     transect_id INT NOT NULL REFERENCES Transects(id) ON DELETE CASCADE,
     distance DOUBLE PRECISION NOT NULL,
-    geom geometry(POINT)
+    geom geometry(POINT),
 );
 
 INSERT INTO Shorelines (sitename, baseline, area)
@@ -46,4 +47,54 @@ VALUES (
                               144.8004 13.4286, 
                               144.7853 13.4205,  
                               144.7948 13.4293))')  
-);
+), (
+    'TEST2',
+    ST_SetSRID(
+        ST_GeomFromGeoJSON('{
+        "type": "LineString", 
+        "coordinates": [ 
+            [ -125.89586421741501, 49.110203027846936 ], 
+            [ -125.893666071682333, 49.11309892870819 ], 
+            [ -125.894848314904664, 49.118233447220312 ], 
+            [ -125.897599572756462, 49.12182124087591 ], 
+            [ -125.900544509274937, 49.123062024048529 ] 
+        ]
+        }'), 4326
+    ),
+    ST_SetSRID(
+        ST_GeomFromGeoJSON('{
+            "type": "Polygon", 
+            "coordinates": [ [ 
+                [ -125.896629083633542, 49.109333285130973 ], 
+                [ -125.89163391797301, 49.112641084424745 ], 
+                [ -125.898995069493452, 49.125868077976676 ], 
+                [ -125.903407551879965, 49.122147641927576 ], 
+                [ -125.896629083633542, 49.109333285130973 ] 
+            ] ]
+        }'), 4326
+    )
+)
+
+INSERT INTO Transects (id, shoreline_sitename, geom)
+VALUES (
+    (1, 'TEST2', ST_SetSRID(
+            ST_GeomFromGeoJSON('{ "type": "LineString", "coordinates": [ [ 1007639.722662, 456334.414515000011306 ], [ 1006898.373719, 456033.745684999972582 ] ] }'),
+            3005
+        ),
+    ),
+    (2, 'TEST2', ST_SetSRID(
+            ST_GeomFromGeoJSON('{ "type": "LineString", "coordinates": [ [ 1007756.983505, 456045.288427 ], [ 1007015.634563, 455744.619597000011709 ] ] }'),
+            3005
+        )
+    ),
+    (3, 'TEST2', ST_SetSRID(
+        ST_GeomFromGeoJSON('{ "type": "LineString", "coordinates": [ [ 1007918.593002, 455646.813371 ], [ 1007177.244059, 455346.14454 ] ] }'),
+        3005
+        )
+    ),
+    (4, 'TEST2', ST_SetSRID(
+        ST_GeomFromGeoJSON('{ "type": "LineString", "coordinates": [ [ 1008108.766037, 455177.910164 ], [ 1007367.417094, 454877.241334000020288 ] ] }'),
+        3005
+        )
+    )
+)
