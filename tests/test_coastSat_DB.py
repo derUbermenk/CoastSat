@@ -9,7 +9,7 @@ def test_initializeCoastSatRunner():
     endDate = "2024-02-01"
     sitename = "TEST1"
     tides = "/data/tides.csv"
-    connstring = "appropriate_db_connstring"
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
 
     args = [
         startDate,
