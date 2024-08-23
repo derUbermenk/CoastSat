@@ -1,5 +1,8 @@
 from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Baseline 
 from unittest.mock import Mock, patch
+from sqlalchemy import create_engine
+import pandas as pd
+
 
 def test_initializeCoastSatRunner():
     startDate = "2024-01-01"
@@ -62,3 +65,59 @@ def test_retrieve_base_shoreline():
     assert base_shoreline.sitename == expected_base_shoreline.sitename
     assert base_shoreline.baseline_geom == expected_base_shoreline.baseline_geom
     assert base_shoreline.area_geom == expected_base_shoreline.area_geom
+
+def test_save_intersects_to_db():
+
+    # Define the data
+    data = {
+        'geometry': [None] * 7,  # Assuming geometry is not provided here, hence set to None
+        'date': [
+            '2019-12-02 23:56:06',
+            '2019-12-16 00:06:02',
+            '2019-12-17 23:56:06',
+            '2019-12-21 00:06:02',
+            '2019-12-26 00:06:03',
+            '2019-12-27 23:56:07',
+            '2019-12-31 00:06:02'
+        ],
+        'satname': ['S2'] * 7,
+        'geoaccuracy': ['PASSED'] * 7,
+        'cloud_cover': [
+            0,
+            0.41537095271372,
+            0,
+            0.0404583042161659,
+            0,
+            0,
+            0.0552061495457722
+        ]
+    }
+
+    # Create the DataFrame
+    gdf = pd.DataFrame(data)
+
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    csRunner = CoastSatRunnerDB(
+        "2024-01-01",
+        "2024-02-01",
+        "TEST1",
+        "/data/tides.csv",
+        connstring 
+    )
+
+    csRunner.save_profiles_to_db(gdf) 
+
+    # test data
+    engine = create_engine(connstring)
+    with engine.connect() as connection:
+        results = connection.execute("SELECT * FROM profiles where sitename = 'TEST1'")
+        rows = results.fetchall()
+    
+    assert rows
+
+
+    
+    
+
+def test_save_profiles_to_db():
+    pass
