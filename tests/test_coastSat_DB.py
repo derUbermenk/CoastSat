@@ -1,6 +1,6 @@
 from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Baseline 
 from unittest.mock import Mock, patch
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import pandas as pd
 
 
@@ -66,7 +66,7 @@ def test_retrieve_base_shoreline():
     assert base_shoreline.baseline_geom == expected_base_shoreline.baseline_geom
     assert base_shoreline.area_geom == expected_base_shoreline.area_geom
 
-def test_save_intersects_to_db():
+def test_save_profiles_to_db():
 
     # Define the data
     data = {
@@ -105,19 +105,20 @@ def test_save_intersects_to_db():
         connstring 
     )
 
-    csRunner.save_profiles_to_db(gdf) 
-
-    # test data
+    # cleanup
     engine = create_engine(connstring)
     with engine.connect() as connection:
-        results = connection.execute("SELECT * FROM profiles where sitename = 'TEST1'")
+        connection.execute(text("DELETE FROM profiles"))
+        results = connection.execute(text("SELECT * FROM profiles where shoreline_sitename = 'TEST1'"))
         rows = results.fetchall()
-    
-    assert rows
+        assert not rows
 
-
-    
-    
+        csRunner.save_profiles_to_db(gdf) 
+        results = connection.execute(text("SELECT * FROM profiles where shoreline_sitename = 'TEST1'"))
+        rows = results.fetchall()
+        
+        assert rows
+        connection.execute(text("DELETE FROM profiles"))
 
 def test_save_profiles_to_db():
     pass
