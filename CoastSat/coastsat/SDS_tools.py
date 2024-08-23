@@ -797,7 +797,6 @@ def output_to_gdf(output, geomtype):
             gdf = gpd.GeoDataFrame(geometry=gpd.GeoSeries(geom))
             gdf.index = [i]
             gdf.loc[i,'date'] = output['dates'][i].strftime('%Y-%m-%d %H:%M:%S')
-            gdf.loc[i,'record_date'] = output['dates'][i].strftime('%Y-%m-%d')
             gdf.loc[i,'satname'] = output['satname'][i]
             gdf.loc[i,'geoaccuracy'] = output['geoaccuracy'][i]
             gdf.loc[i,'cloud_cover'] = output['cloud_cover'][i]
