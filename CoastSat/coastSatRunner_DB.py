@@ -9,10 +9,8 @@ import os
 import sys
 import ast
 
-from shapely import wkb, geometry
 from sqlalchemy import create_engine, text 
 from sqlalchemy.orm import sessionmaker 
-from geoalchemy2 import Geometry
 
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
 
@@ -169,6 +167,23 @@ class CoastSatRunnerDB():
             ast.literal_eval(row[2])
         ) 
 
+    def save_profiles_to_db(self,gdf):
+        df = pd.DataFrame(gdf)
+
+        # drop unnecessary columns
+        df['shoreline_sitename'] = self.sitename
+        df['date'] = pd.to_datetime(df['date'])
+        df['record_date'] = df['date'].dt.strftime('%Y-%m-%d')
+        df = df.drop(columns=['date', 'geometry'])       
+
+        engine = create_engine(self.connstring)
+        df.to_sql(
+            name='profiles',
+            con=engine,
+            if_exists='append',
+            index=False
+        )
+    
     def run(self):
         self.inputs = self.init_inputs()
         self.settings = self.init_settings()
@@ -181,7 +196,10 @@ class CoastSatRunnerDB():
         transects = self.load_transect_geojson()
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
+
         # save to csv
+        gdf = SDS_tools.output_to_gdf(output, 'lines')
+        self.save_profiles_to_db(gdf)
         try:
             tidal_corrected_df.to_csv(self.savePath, sep=',')
         except Exception as e:
