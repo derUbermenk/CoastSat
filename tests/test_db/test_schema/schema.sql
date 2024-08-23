@@ -15,6 +15,9 @@ CREATE TABLE Profiles (
     id SERIAL PRIMARY KEY,
     shoreline_sitename VARCHAR(20) NOT NULL REFERENCES Shorelines(sitename) ON DELETE CASCADE,
     record_date DATE NOT NULL,
+    satname VARCHAR(5),
+    geoaccuracy VARCHAR(10),
+    cloud_cover DOUBLE PRECISION,
     geom geometry(MULTILINESTRING)
 ); 
 
