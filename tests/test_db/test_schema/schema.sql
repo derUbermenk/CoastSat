@@ -30,7 +30,7 @@ CREATE TABLE Transects (
 
 CREATE TABLE Intersects (
     id INT,
-    profile_record_date INT NOT NULL REFERENCES Profiles(record_date) ON DELETE CASCADE,
+    profile_record_date DATE NOT NULL REFERENCES Profiles(record_date) ON DELETE CASCADE,
     transect_id INT NOT NULL REFERENCES Transects(id) ON DELETE CASCADE,
     distance DOUBLE PRECISION NOT NULL,
     geom geometry(POINT),
