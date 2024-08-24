@@ -105,20 +105,20 @@ def test_save_profiles_to_db():
         connstring 
     )
 
-    # cleanup
     engine = create_engine(connstring)
-    with engine.connect() as connection:
+    with engine.begin() as connection:
         connection.execute(text("DELETE FROM profiles"))
-        results = connection.execute(text("SELECT * FROM profiles where shoreline_sitename = 'TEST1'"))
+        results = connection.execute(text("SELECT * FROM profiles WHERE shoreline_sitename = 'TEST1'"))
         rows = results.fetchall()
         assert not rows
 
         csRunner.save_profiles_to_db(gdf) 
-        results = connection.execute(text("SELECT * FROM profiles where shoreline_sitename = 'TEST1'"))
+        results = connection.execute(text("SELECT * FROM profiles WHERE shoreline_sitename = 'TEST1'"))
         rows = results.fetchall()
-        
         assert rows
         connection.execute(text("DELETE FROM profiles"))
+        print('deleted profiles')
+
 
 def test_save_intersects_to_db():
     data = {
@@ -145,8 +145,10 @@ def test_save_intersects_to_db():
 
     # cleanup
     engine = create_engine(connstring)
-    with engine.connect() as connection:
-        connection.execute(text("DELETE FROM profiles"))
+    with engine.begin() as connection:
+        connection.execute(text("DELETE FROM intersects"))
+        connection.execute(text("DELETE FROM transects"))
+        results = connection.execute(text("INSERT INTO Transects (transect_name, shoreline_sitename, geom) VALUES ('T1', 'TEST1', NULL)"))
         results = connection.execute(text("SELECT * FROM intersects"))
         rows = results.fetchall()
         assert not rows
@@ -156,4 +158,5 @@ def test_save_intersects_to_db():
         rows = results.fetchall()
         
         assert rows
-        connection.execute(text("DELETE FROM profiles"))
+        connection.execute(text("DELETE FROM profiles;"))
+        connection.execute(text("DELETE FROM transects;"))
