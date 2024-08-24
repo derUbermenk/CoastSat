@@ -120,5 +120,40 @@ def test_save_profiles_to_db():
         assert rows
         connection.execute(text("DELETE FROM profiles"))
 
-def test_save_profiles_to_db():
-    pass
+def test_save_intersects_to_db():
+    data = {
+        'dates': [
+            '2024-01-06 19:40:54+00:00',
+            '2024-01-11 19:40:55+00:00',
+            '2024-01-12 19:40:55+00:00'
+        ],
+        'T1': [10, 15, 5],
+        'T2': [20, 25, 6],
+        'T3': [15, 17, 8]
+    }
+
+    df = pd.DataFrame(data)
+
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    csRunner = CoastSatRunnerDB(
+        "2024-01-01",
+        "2024-02-01",
+        "TEST1",
+        "/data/tides.csv",
+        connstring 
+    )
+
+    # cleanup
+    engine = create_engine(connstring)
+    with engine.connect() as connection:
+        connection.execute(text("DELETE FROM profiles"))
+        results = connection.execute(text("SELECT * FROM intersects"))
+        rows = results.fetchall()
+        assert not rows
+
+        csRunner.save_intersects_to_db(df) 
+        results = connection.execute(text("SELECT * FROM intersects"))
+        rows = results.fetchall()
+        
+        assert rows
+        connection.execute(text("DELETE FROM profiles"))
