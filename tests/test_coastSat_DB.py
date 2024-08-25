@@ -107,7 +107,7 @@ def test_save_profiles_to_db():
 
     engine = create_engine(connstring)
     with engine.begin() as connection:
-        connection.execute(text("DELETE FROM profiles"))
+        connection.execute(text("DELETE FROM profiles WHERE shoreline_sitename = 'TEST1'"))
         results = connection.execute(text("SELECT * FROM profiles WHERE shoreline_sitename = 'TEST1'"))
         rows = results.fetchall()
         assert not rows
@@ -116,12 +116,11 @@ def test_save_profiles_to_db():
         results = connection.execute(text("SELECT * FROM profiles WHERE shoreline_sitename = 'TEST1'"))
         rows = results.fetchall()
         assert rows
-        connection.execute(text("DELETE FROM profiles"))
-        print('deleted profiles')
+        connection.execute(text("DELETE FROM profiles WHERE shoreline_sitename = 'TEST1'"))
 
 
 def test_save_intersects_to_db():
-    data = {
+    intersect_data = {
         'dates': [
             '2024-01-06 19:40:54+00:00',
             '2024-01-11 19:40:55+00:00',
@@ -132,13 +131,13 @@ def test_save_intersects_to_db():
         'T3': [15, 17, 8]
     }
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(intersect_data)
 
     connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
     csRunner = CoastSatRunnerDB(
         "2024-01-01",
         "2024-02-01",
-        "TEST1",
+        "TEST2",
         "/data/tides.csv",
         connstring 
     )
@@ -147,8 +146,6 @@ def test_save_intersects_to_db():
     engine = create_engine(connstring)
     with engine.begin() as connection:
         connection.execute(text("DELETE FROM intersects"))
-        connection.execute(text("DELETE FROM transects"))
-        results = connection.execute(text("INSERT INTO Transects (transect_name, shoreline_sitename, geom) VALUES ('T1', 'TEST1', NULL)"))
         results = connection.execute(text("SELECT * FROM intersects"))
         rows = results.fetchall()
         assert not rows
@@ -159,4 +156,3 @@ def test_save_intersects_to_db():
         
         assert rows
         connection.execute(text("DELETE FROM profiles;"))
-        connection.execute(text("DELETE FROM transects;"))
