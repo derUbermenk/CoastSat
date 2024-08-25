@@ -155,4 +155,4 @@ def test_save_intersects_to_db():
         rows = results.fetchall()
         
         assert rows
-        connection.execute(text("DELETE FROM profiles;"))
+        connection.execute(text("DELETE FROM intersects;"))
