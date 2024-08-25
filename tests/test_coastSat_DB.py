@@ -8,6 +8,7 @@ def test_initializeCoastSatRunner():
     startDate = "2024-01-01"
     endDate = "2024-02-01"
     sitename = "TEST1"
+    epsg = "3005"
     tides = "/data/tides.csv"
     connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
 
@@ -15,6 +16,7 @@ def test_initializeCoastSatRunner():
         startDate,
         endDate,
         sitename,
+        epsg,
         tides,
         connstring
     ]
@@ -27,6 +29,7 @@ def test_initializeCoastSatRunner():
             assert coastSatRunner.startDate == startDate   
             assert coastSatRunner.endDate == endDate
             assert coastSatRunner.sitename == sitename
+            assert coastSatRunner.epsg == epsg 
             assert coastSatRunner.tides == tides
             assert coastSatRunner.connstring == connstring 
 
@@ -57,6 +60,7 @@ def test_retrieve_base_shoreline():
         "2024-01-01",
         "2024-02-01",
         "TEST1",
+        "3005",
         "/data/tides.csv",
         "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
     )
@@ -101,6 +105,7 @@ def test_save_profiles_to_db():
         "2024-01-01",
         "2024-02-01",
         "TEST1",
+        "3005",
         "/data/tides.csv",
         connstring 
     )
@@ -138,6 +143,7 @@ def test_save_intersects_to_db():
         "2024-01-01",
         "2024-02-01",
         "TEST2",
+        "3005",
         "/data/tides.csv",
         connstring 
     )
