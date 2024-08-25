@@ -181,8 +181,41 @@ class CoastSatRunnerDB():
             name='profiles',
             con=engine,
             if_exists='append',
+            index=False,
+            index_label='record_date'
+        )
+    
+    def save_intersects_to_db(self,intersects):
+        engine = create_engine(self.connstring)
+
+        # get df with id, transect name that have shoreline sitename as sitename
+        sql_query = text("SELECT id as transect_id, transect_name FROM transects WHERE shoreline_sitename = :sitename")
+        params = { 'sitename': self.sitename }
+        sitename_transects = pd.read_sql(sql_query, engine, params=params)
+
+        intersects['dates'] = pd.to_datetime(intersects['dates'])
+        intersects['profile_record_date'] = intersects['dates'].dt.strftime('%Y-%m-%d')
+        intersects = intersects.drop(columns=['dates'])       
+
+        intersects_melted = pd.melt(intersects, id_vars=['profile_record_date'], var_name='transect_name', value_name='distance')
+
+        # see schema
+        transects_intersects_melted = pd.merge(
+            sitename_transects,           # Left DataFrame
+            intersects_melted,            # Right DataFrame
+            on='transect_name',           # Column to join on
+            how='right'                    # Join type
+        )
+
+        keep_columns = ['profile_record_date', 'transect_id', 'distance']
+        transects_intersects_melted = transects_intersects_melted[keep_columns]
+        transects_intersects_melted.to_sql(
+            name='intersects',
+            con=engine,
+            if_exists='append',
             index=False
         )
+
     
     def run(self):
         self.inputs = self.init_inputs()
