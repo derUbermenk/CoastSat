@@ -15,6 +15,6 @@ sys.modules["coastsat.SDS_tools"] = module.submodule
 module.submodule = type(sys)("SDS_transects")
 sys.modules["coastsat.SDS_transects"] = module.submodule
 
-def pytest_ignore_collect(path, config):
+def pytest_ignore_collect(collection_path, config):
     ignore_dirs = ["/home/admini/Documents/image_scripts/CoastSat/tests/test_db/pgadmin-data"]
-    return any(str(path).startswith(ignored_dir) for ignored_dir in ignore_dirs)
+    return any(str(collection_path).startswith(ignored_dir) for ignored_dir in ignore_dirs)
