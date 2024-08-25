@@ -26,12 +26,14 @@ class CoastSatRunnerDB():
         startDate,
         endDate,
         sitename,
+        epsg,
         tides,
         connstring
     ):
         self.startDate = startDate
         self.endDate = endDate
         self.sitename = sitename
+        self.epsg=epsg 
         self.tides = tides
         self.connstring = connstring
 
@@ -269,6 +271,7 @@ def initializeCoastSatRunnerDB(_args) ->  CoastSatRunnerDB:
     parser.add_argument("startDate", help="in YYYY-mm-dd format")
     parser.add_argument("endDate", help="in YYYY-mm-dd format")
     parser.add_argument("sitename", help="sitename")
+    parser.add_argument("epsg", help="epsg")
     parser.add_argument("tides", help="path to tide data csv file")
     parser.add_argument("connstring", help="db connstring")
 
@@ -280,6 +283,7 @@ def initializeCoastSatRunnerDB(_args) ->  CoastSatRunnerDB:
         args.startDate,
         args.endDate,
         args.sitename,
+        args.epsg,
         args.tides,
         args.connstring
     )
