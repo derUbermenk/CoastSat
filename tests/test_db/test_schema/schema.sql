@@ -7,7 +7,13 @@ CREATE TABLE Shorelines (
     SCE DOUBLE PRECISION,
     LRR DOUBLE PRECISION,
     WLR DOUBLE PRECISION,
+    -- crs to use for calculating detected shoreline positions
+    --  also used as crs for baseline
+    output_epsg VARCHAR(50) NOT NULL DEFAULT 'EPSG:4326',
+    -- used as reference for determining shoreline. must use
+    --  output crs
     baseline geometry(LINESTRING) NOT NULL,
+    -- uses EPSG:4326
     area  geometry(POLYGON) NOT NULL
 );
 
