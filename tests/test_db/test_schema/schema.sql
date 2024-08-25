@@ -105,3 +105,9 @@ VALUES
     3005
     )
 );
+
+INSERT INTO Profiles (record_date, shoreline_sitename, satname, geoaccuracy, cloud_cover, geom)
+VALUES
+    ('2024-01-06', 'TEST2', NULL, NULL, NULL, NULL),
+    ('2024-01-11', 'TEST2', NULL, NULL, NULL, NULL),
+    ('2024-01-12', 'TEST2', NULL, NULL, NULL, NULL);
