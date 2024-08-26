@@ -62,7 +62,8 @@ class CoastSatRunnerDB():
 
     def init_settings(self):
         # get reference shorline
-        ref_shoreline_coords = self.baseline_geom['coordinates']
+        # cast to np array, coastsat shoreline requires this
+        ref_shoreline_coords = np.array(self.baseline_geom['coordinates'])
 
         settings = {
             # general parameters:
