@@ -190,6 +190,7 @@ class CoastSatRunnerDB():
 
     def save_profiles_to_db(self,gdf):
         df = pd.DataFrame(gdf)
+        print(df.columns)
 
         # drop unnecessary columns
         df['shoreline_sitename'] = self.sitename
