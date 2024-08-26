@@ -247,7 +247,7 @@ class CoastSatRunnerDB():
         settings = self.init_settings()
 
         output = self.extract_shorelines(metadata, settings)
-        transects = self.load_transect_geojson()
+        transects = self.retrieve_transects()
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
 
