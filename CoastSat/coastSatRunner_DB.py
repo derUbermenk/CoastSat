@@ -8,6 +8,7 @@ import numpy as np
 import os
 import sys
 import ast
+import json
 
 from sqlalchemy import create_engine, text 
 from sqlalchemy.orm import sessionmaker 
@@ -169,6 +170,23 @@ class CoastSatRunnerDB():
             ast.literal_eval(row[1]),
             ast.literal_eval(row[2])
         ) 
+
+    def retrieve_transects(self):
+        query = """
+            SELECT transect_name, ST_AsGeoJSON(geom) as geom_json
+                FROM transects;
+        """
+
+        transects_df = pd.read_sql(query, self.connstring)
+        transects_df['geom_array'] = transects_df['geom_json'].apply(self.geojson_to_numpy)
+        transects_dict = transects_df.set_index('transect_name')['geom_array'].to_dict()
+        return transects_dict
+
+    def geojson_to_numpy(self, geojson_str):
+        geom_dict = json.loads(geojson_str)
+        coordinates = geom_dict['coordinates']
+        return np.array(coordinates)
+
 
     def save_profiles_to_db(self,gdf):
         df = pd.DataFrame(gdf)
