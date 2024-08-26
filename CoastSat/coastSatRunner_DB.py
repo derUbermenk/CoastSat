@@ -9,6 +9,7 @@ import os
 import sys
 import ast
 import json
+import geopandas as gpd
 
 from sqlalchemy import create_engine, text 
 from sqlalchemy.orm import sessionmaker 
@@ -188,13 +189,19 @@ class CoastSatRunnerDB():
         return np.array(coordinates)
 
 
-    def save_profiles_to_db(self,gdf):
+    def save_profiles_to_db(self,gdf: gpd.GeoDataFrame):
         df = pd.DataFrame(gdf)
-        print(df.columns)
 
         # drop unnecessary columns
         df['shoreline_sitename'] = self.sitename
-        df['date'] = pd.to_datetime(df['date'])
+        try:
+            df['date'] = pd.to_datetime(df['date'])
+        except Exception as e:
+            print(f"here are df columns: {df.columns}")
+            print(f"here are gdf columns: {gdf.columns}")
+            raise e
+
+
         df['record_date'] = df['date'].dt.strftime('%Y-%m-%d')
         df = df.drop(columns=['date', 'geometry'])       
 
