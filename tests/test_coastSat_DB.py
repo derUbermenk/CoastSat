@@ -2,6 +2,7 @@ from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Baseline
 from unittest.mock import Mock, patch
 from sqlalchemy import create_engine, text
 import pandas as pd
+import numpy as np
 
 
 def test_initializeCoastSatRunner():
@@ -69,6 +70,28 @@ def test_retrieve_base_shoreline():
     assert base_shoreline.sitename == expected_base_shoreline.sitename
     assert base_shoreline.baseline_geom == expected_base_shoreline.baseline_geom
     assert base_shoreline.area_geom == expected_base_shoreline.area_geom
+
+def test_retrieve_transects():
+    expected_transects = {
+        'T1': np.array([[1007639.722662, 456334.414515000011306], [1006898.373719, 456033.745684999972582]]),
+        'T2': np.array([[1007756.983505, 456045.288427], [1007015.634563, 455744.619597000011709]]),
+        'T3': np.array([[1007918.593002, 455646.813371], [1007177.244059, 455346.14454]]),
+        'T4': np.array([[1008108.766037, 455177.910164], [1007367.417094, 454877.241334000020288]])
+    }
+
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    csRunner = CoastSatRunnerDB(
+            "2024-01-01",
+            "2024-02-01",
+            "TEST2",
+            "3005",
+            "/data/tides.csv",
+            connstring 
+        )
+
+    transects = csRunner.retrieve_transects()
+    assert transects, expected_transects
+
 
 def test_save_profiles_to_db():
 
