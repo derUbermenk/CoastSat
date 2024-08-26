@@ -197,8 +197,11 @@ class CoastSatRunnerDB():
         try:
             df['date'] = pd.to_datetime(df['date'])
         except Exception as e:
-            print(f"here are df columns: {df.columns}")
-            print(f"here are gdf columns: {gdf.columns}")
+            print("\n")
+            print(f"here are df columns: {df.columns} \n")
+            print(f"here are df columns: {df} \n")
+            print(f"here are gdf columns: {gdf.columns} \n")
+            print("\n")
             raise e
 
 
@@ -255,6 +258,10 @@ class CoastSatRunnerDB():
         settings = self.init_settings()
 
         output = self.extract_shorelines(metadata, settings)
+        try:
+            raise ValueError
+        except:
+            print(f"\nhere is output: {output} \n")
         transects = self.retrieve_transects()
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
