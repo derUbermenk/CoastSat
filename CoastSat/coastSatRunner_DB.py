@@ -28,14 +28,14 @@ class CoastSatRunnerDB():
         endDate,
         sitename,
         epsg,
-        tides,
+        path_to_tides,
         connstring
     ):
         self.startDate = startDate
         self.endDate = endDate
         self.sitename = sitename
         self.epsg=epsg 
-        self.tides = tides
+        self.path_to_tides = path_to_tides 
         self.connstring = connstring
 
         base_shoreline = self.retrieve_base_shoreline() 
