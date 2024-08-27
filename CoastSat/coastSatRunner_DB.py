@@ -123,7 +123,8 @@ resulting polygon:
         return output
 
     def load_transect_geojson(self):
-        transects = SDS_tools.transects_from_geojson(self.path_to_transects)
+        path_to_transects = "/run_data/input/transects.geojson"
+        transects = SDS_tools.transects_from_geojson(path_to_transects)
 
         return transects
 
@@ -276,7 +277,8 @@ resulting polygon:
             raise ValueError
         except:
             print(f"\nhere is output: {output} \n")
-        transects = self.retrieve_transects()
+        # transects = self.retrieve_transects()
+        transects = self.load_transect_geojson()
         print(
 f"""
 transects used:
