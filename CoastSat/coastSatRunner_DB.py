@@ -53,15 +53,6 @@ class CoastSatRunnerDB():
         sat_list = ['L5','L7','L8', 'S2']
         collection = 'C02'
 
-        print(
-f"""
-used the following coords for polygon:
-    {self.area_geom['coordinates']}
-
-resulting polygon:
-    {polygon}
-""")
-
         inputs = {
             'polygon': polygon,
             'dates': dates,
@@ -210,16 +201,7 @@ resulting polygon:
 
         # drop unnecessary columns
         df['shoreline_sitename'] = self.sitename
-        try:
-            df['date'] = pd.to_datetime(df['date'])
-        except Exception as e:
-            print("\n")
-            print(f"here are df columns: {df.columns} \n")
-            print(f"here are df columns: {df} \n")
-            print(f"here are gdf columns: {gdf.columns} \n")
-            print("\n")
-            raise e
-
+        df['date'] = pd.to_datetime(df['date'])
 
         df['record_date'] = df['date'].dt.strftime('%Y-%m-%d')
         df = df.drop(columns=['date', 'geometry'])       
@@ -273,18 +255,7 @@ resulting polygon:
         metadata = SDS_download.retrieve_images(self.inputs)
 
         output = self.extract_shorelines(metadata, self.settings)
-        try:
-            raise ValueError
-        except:
-            print(f"\nhere is output: {output} \n")
-        # transects = self.retrieve_transects()
-        transects = self.load_transect_geojson()
-        print(
-f"""
-transects used:
-    {transects}
-"""
-        )
+        transects = self.retrieve_transects()
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
 
