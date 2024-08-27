@@ -151,7 +151,7 @@ class CoastSatRunnerDB():
         out_dict = dict([])
         out_dict['dates'] = dates_sat
         for key in cross_distance_tidally_corrected.keys():
-            out_dict['Transect '+ key] = cross_distance_tidally_corrected[key]
+            out_dict[key] = cross_distance_tidally_corrected[key]
         df = pd.DataFrame(out_dict)
         return df
     
