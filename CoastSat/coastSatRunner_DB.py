@@ -101,8 +101,8 @@ resulting polygon:
             'inputs': self.inputs,
 
             # reference shoreline
-            'reference_shoreline': ref_shoreline_coords,
-            'max_dist_ref': 100
+            # 'reference_shoreline': ref_shoreline_coords,
+            # 'max_dist_ref': 100
         }
 
         return settings
