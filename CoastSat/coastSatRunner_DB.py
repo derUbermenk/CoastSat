@@ -77,7 +77,8 @@ resulting polygon:
         # get reference shorline
         # cast to np array, coastsat shoreline requires this
         # ref_shoreline_coords = np.array(self.baseline_geom['coordinates'])
-        path_to_ref_shoreline = "/home/admini/Documents/image_scripts/CoastSat/CoastSat/test_run_data/input/ref_shoreline.pkl"
+        # path_to_ref_shoreline = "/home/admini/Documents/image_scripts/CoastSat/CoastSat/test_run_data/input/ref_shoreline.pkl"
+        path_to_ref_shoreline = "/run_data/input/ref_shoreline.pkl"
         with open(path_to_ref_shoreline, 'rb') as f:
             ref_shoreline_coords = pickle.load(f)
 
