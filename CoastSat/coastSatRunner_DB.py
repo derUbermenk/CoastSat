@@ -46,9 +46,9 @@ class CoastSatRunnerDB():
     
 
     def init_inputs(self):
-        # polygon = SDS_tools.smallest_rectangle(self.area_geom['coordinates'])
-        coordinates = [[-125.895220405324,49.1237726477147],[-125.88841138016,49.1127817966321],[-125.899425059767,49.1098655680256],[-125.906924940215,49.1205546121385],[-125.895220405324,49.1237726477147]]
-        polygon = SDS_tools.smallest_rectangle([coordinates])
+        polygon = SDS_tools.smallest_rectangle(self.area_geom['coordinates'])
+        # coordinates = [[-125.895220405324,49.1237726477147],[-125.88841138016,49.1127817966321],[-125.899425059767,49.1098655680256],[-125.906924940215,49.1205546121385],[-125.895220405324,49.1237726477147]]
+        # polygon = SDS_tools.smallest_rectangle([coordinates])
         dates = [self.startDate, self.endDate]
         sat_list = ['L5','L7','L8', 'S2']
         collection = 'C02'
@@ -182,10 +182,13 @@ class CoastSatRunnerDB():
     def retrieve_transects(self):
         query = """
             SELECT transect_name, ST_AsGeoJSON(geom) as geom_json
-                FROM transects;
+                FROM transects
+                WHERE shoreline_sitename = %(sitename)s
+                ;
         """
+        params = {'sitename': self.sitename}
 
-        transects_df = pd.read_sql(query, self.connstring)
+        transects_df = pd.read_sql(query, self.connstring, params=params)
         transects_df['geom_array'] = transects_df['geom_json'].apply(self.geojson_to_numpy)
         transects_dict = transects_df.set_index('transect_name')['geom_array'].to_dict()
         return transects_dict
@@ -222,20 +225,6 @@ class CoastSatRunnerDB():
         sql_query = text("SELECT id as transect_id, transect_name FROM transects WHERE shoreline_sitename = :sitename")
         params = { 'sitename': self.sitename }
         sitename_transects = pd.read_sql(sql_query, engine, params=params)
-        print(
-f"""
-here sitename transects
-    {sitename_transects}
-"""
-        )
-
-        print(
-f"""
-here intersect columns
-    {intersects.columns}
-"""
-        )
-
         intersects['dates'] = pd.to_datetime(intersects['dates'])
         intersects['profile_record_date'] = intersects['dates'].dt.strftime('%Y-%m-%d')
         intersects = intersects.drop(columns=['dates'])       
