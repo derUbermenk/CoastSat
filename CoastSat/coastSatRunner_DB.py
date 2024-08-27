@@ -277,6 +277,12 @@ resulting polygon:
         except:
             print(f"\nhere is output: {output} \n")
         transects = self.retrieve_transects()
+        print(
+f"""
+transects used:
+    {transects}
+"""
+        )
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
 
