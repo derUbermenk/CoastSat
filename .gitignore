@@ -1,3 +1,7 @@
+CoastSat/extract_ref_sl.py
+CoastSat/test_run.sh
+CoastSat/test_run_data/
+tests/test_db/pgadmin-data/
 .env-*
 *.pyc
 *.mat
