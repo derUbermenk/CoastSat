@@ -101,8 +101,8 @@ resulting polygon:
             'inputs': self.inputs,
 
             # reference shoreline
-            # 'reference_shoreline': ref_shoreline_coords,
-            # 'max_dist_ref': 100
+            'reference_shoreline': ref_shoreline_coords,
+            'max_dist_ref': 100
         }
 
         return settings
@@ -280,13 +280,14 @@ resulting polygon:
         # save to csv
         gdf = SDS_tools.output_to_gdf(output, 'lines')
         self.save_profiles_to_db(gdf)
-        try:
-            tidal_corrected_df.to_csv(self.savePath, sep=',')
-        except Exception as e:
-            print(f"failed extracting data due to error \n\t{e}")
-            sys.exit(1)
-        else:
-            print(f"file saved in \n\t{self.savePath}")
+        self.save_intersects_to_db(tidal_corrected_df)
+        # try:
+        #     tidal_corrected_df.to_csv(self.savePath, sep=',')
+        # except Exception as e:
+        #     print(f"failed extracting data due to error \n\t{e}")
+        #     sys.exit(1)
+        # else:
+        #     print(f"file saved in \n\t{self.savePath}")
 
 def assertfile_type_and_exists(file_path, expected_extension, assert_exist = True):
     if assert_exist:
