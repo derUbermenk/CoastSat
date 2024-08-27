@@ -215,13 +215,26 @@ class CoastSatRunnerDB():
             index_label='record_date'
         )
     
-    def save_intersects_to_db(self,intersects):
+    def save_intersects_to_db(self,intersects: pd.DataFrame):
         engine = create_engine(self.connstring)
 
         # get df with id, transect name that have shoreline sitename as sitename
         sql_query = text("SELECT id as transect_id, transect_name FROM transects WHERE shoreline_sitename = :sitename")
         params = { 'sitename': self.sitename }
         sitename_transects = pd.read_sql(sql_query, engine, params=params)
+        print(
+f"""
+here sitename transects
+    {sitename_transects}
+"""
+        )
+
+        print(
+f"""
+here intersect columns
+    {intersects.columns}
+"""
+        )
 
         intersects['dates'] = pd.to_datetime(intersects['dates'])
         intersects['profile_record_date'] = intersects['dates'].dt.strftime('%Y-%m-%d')
