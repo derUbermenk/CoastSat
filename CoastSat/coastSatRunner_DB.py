@@ -47,8 +47,6 @@ class CoastSatRunnerDB():
 
     def init_inputs(self):
         polygon = SDS_tools.smallest_rectangle(self.area_geom['coordinates'])
-        # coordinates = [[-125.895220405324,49.1237726477147],[-125.88841138016,49.1127817966321],[-125.899425059767,49.1098655680256],[-125.906924940215,49.1205546121385],[-125.895220405324,49.1237726477147]]
-        # polygon = SDS_tools.smallest_rectangle([coordinates])
         dates = [self.startDate, self.endDate]
         sat_list = ['L5','L7','L8', 'S2']
         collection = 'C02'
@@ -68,10 +66,6 @@ class CoastSatRunnerDB():
         # get reference shorline
         # cast to np array, coastsat shoreline requires this
         ref_shoreline_coords = np.array(self.baseline_geom['coordinates'])
-        # path_to_ref_shoreline = "/home/admini/Documents/image_scripts/CoastSat/CoastSat/test_run_data/input/ref_shoreline.pkl"
-        # path_to_ref_shoreline = "/run_data/input/ref_shoreline.pkl"
-        # with open(path_to_ref_shoreline, 'rb') as f:
-        #     ref_shoreline_coords = pickle.load(f)
 
         settings = {
             # general parameters:
@@ -265,13 +259,6 @@ class CoastSatRunnerDB():
         gdf = SDS_tools.output_to_gdf(output, 'lines')
         self.save_profiles_to_db(gdf)
         self.save_intersects_to_db(tidal_corrected_df)
-        # try:
-        #     tidal_corrected_df.to_csv(self.savePath, sep=',')
-        # except Exception as e:
-        #     print(f"failed extracting data due to error \n\t{e}")
-        #     sys.exit(1)
-        # else:
-        #     print(f"file saved in \n\t{self.savePath}")
 
 def assertfile_type_and_exists(file_path, expected_extension, assert_exist = True):
     if assert_exist:
