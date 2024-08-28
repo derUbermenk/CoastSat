@@ -180,7 +180,7 @@ def test_save_intersects_to_db():
         assert not rows
 
         csRunner.save_intersects_to_db(df) 
-        results = connection.execute(text("SELECT * FROM intersects"))
+        results = connection.execute(text("SELECT * FROM intersects WHERE shoreline_sitename = 'TEST2'"))
         rows = results.fetchall()
         
         assert rows
