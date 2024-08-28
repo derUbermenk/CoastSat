@@ -108,7 +108,8 @@ class CoastSatRunnerDB():
         return output
 
     def load_transect_geojson(self):
-        transects = SDS_tools.transects_from_geojson(self.path_to_transects)
+        path_to_transects = "/run_data/input/transects.geojson"
+        transects = SDS_tools.transects_from_geojson(path_to_transects)
 
         return transects
 
@@ -144,7 +145,7 @@ class CoastSatRunnerDB():
         out_dict = dict([])
         out_dict['dates'] = dates_sat
         for key in cross_distance_tidally_corrected.keys():
-            out_dict['Transect '+ key] = cross_distance_tidally_corrected[key]
+            out_dict[key] = cross_distance_tidally_corrected[key]
         df = pd.DataFrame(out_dict)
         return df
     
@@ -175,10 +176,13 @@ class CoastSatRunnerDB():
     def retrieve_transects(self):
         query = """
             SELECT transect_name, ST_AsGeoJSON(geom) as geom_json
-                FROM transects;
+                FROM transects
+                WHERE shoreline_sitename = %(sitename)s
+                ;
         """
+        params = {'sitename': self.sitename}
 
-        transects_df = pd.read_sql(query, self.connstring)
+        transects_df = pd.read_sql(query, self.connstring, params=params)
         transects_df['geom_array'] = transects_df['geom_json'].apply(self.geojson_to_numpy)
         transects_dict = transects_df.set_index('transect_name')['geom_array'].to_dict()
         return transects_dict
@@ -194,16 +198,7 @@ class CoastSatRunnerDB():
 
         # drop unnecessary columns
         df['shoreline_sitename'] = self.sitename
-        try:
-            df['date'] = pd.to_datetime(df['date'])
-        except Exception as e:
-            print("\n")
-            print(f"here are df columns: {df.columns} \n")
-            print(f"here are df columns: {df} \n")
-            print(f"here are gdf columns: {gdf.columns} \n")
-            print("\n")
-            raise e
-
+        df['date'] = pd.to_datetime(df['date'])
 
         df['record_date'] = df['date'].dt.strftime('%Y-%m-%d')
         df = df.drop(columns=['date', 'geometry'])       
@@ -217,14 +212,13 @@ class CoastSatRunnerDB():
             index_label='record_date'
         )
     
-    def save_intersects_to_db(self,intersects):
+    def save_intersects_to_db(self,intersects: pd.DataFrame):
         engine = create_engine(self.connstring)
 
         # get df with id, transect name that have shoreline sitename as sitename
         sql_query = text("SELECT id as transect_id, transect_name FROM transects WHERE shoreline_sitename = :sitename")
         params = { 'sitename': self.sitename }
         sitename_transects = pd.read_sql(sql_query, engine, params=params)
-
         intersects['dates'] = pd.to_datetime(intersects['dates'])
         intersects['profile_record_date'] = intersects['dates'].dt.strftime('%Y-%m-%d')
         intersects = intersects.drop(columns=['dates'])       
@@ -255,13 +249,8 @@ class CoastSatRunnerDB():
 
         # download images
         metadata = SDS_download.retrieve_images(self.inputs)
-        settings = self.init_settings()
 
-        output = self.extract_shorelines(metadata, settings)
-        try:
-            raise ValueError
-        except:
-            print(f"\nhere is output: {output} \n")
+        output = self.extract_shorelines(metadata, self.settings)
         transects = self.retrieve_transects()
         cross_distance = self.compute_transect_shoreline_intersects(output, transects)
         tidal_corrected_df = self.tidal_correction(output, cross_distance)
@@ -269,13 +258,7 @@ class CoastSatRunnerDB():
         # save to csv
         gdf = SDS_tools.output_to_gdf(output, 'lines')
         self.save_profiles_to_db(gdf)
-        try:
-            tidal_corrected_df.to_csv(self.savePath, sep=',')
-        except Exception as e:
-            print(f"failed extracting data due to error \n\t{e}")
-            sys.exit(1)
-        else:
-            print(f"file saved in \n\t{self.savePath}")
+        self.save_intersects_to_db(tidal_corrected_df)
 
 def assertfile_type_and_exists(file_path, expected_extension, assert_exist = True):
     if assert_exist:
