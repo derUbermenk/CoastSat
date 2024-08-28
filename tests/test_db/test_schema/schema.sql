@@ -38,6 +38,7 @@ CREATE TABLE Intersects (
     id SERIAL PRIMARY KEY,
     profile_record_date DATE NOT NULL REFERENCES Profiles(record_date) ON DELETE CASCADE,
     transect_id INT NOT NULL REFERENCES Transects(id) ON DELETE CASCADE,
+    shoreline_sitename VARCHAR(20) NOT NULL REFERENCES Shorelines(sitename) ON DELETE CASCADE,
     distance DOUBLE PRECISION NOT NULL,
     geom geometry(POINT),
 
