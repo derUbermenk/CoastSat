@@ -224,6 +224,7 @@ class CoastSatRunnerDB():
         intersects = intersects.drop(columns=['dates'])       
 
         intersects_melted = pd.melt(intersects, id_vars=['profile_record_date'], var_name='transect_name', value_name='distance')
+        intersects_melted['shoreline_sitename'] = self.sitename
 
         # see schema
         transects_intersects_melted = pd.merge(
@@ -233,7 +234,7 @@ class CoastSatRunnerDB():
             how='right'                    # Join type
         )
 
-        keep_columns = ['profile_record_date', 'transect_id', 'distance']
+        keep_columns = ['profile_record_date', 'transect_id', 'distance', 'shoreline_sitename']
         transects_intersects_melted = transects_intersects_melted[keep_columns]
         transects_intersects_melted.to_sql(
             name='intersects',
