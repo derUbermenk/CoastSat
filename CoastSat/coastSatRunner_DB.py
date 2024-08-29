@@ -12,9 +12,21 @@ import json
 import geopandas as gpd
 
 from sqlalchemy import create_engine, text 
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker 
 
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
+
+def postgres_upsert(table, conn, keys, data_iter):
+
+    data = [dict(zip(keys, row)) for row in data_iter]
+
+    insert_statement = insert(table.table).values(data)
+    upsert_statement = insert_statement.on_conflict_do_update(
+        constraint=f"{table.table.name}_pkey",
+        set_={c.key: c for c in insert_statement.excluded},
+    )
+    conn.execute(upsert_statement)
 
 class Baseline():
     def __init__(self, sitename: str, baseline_geom: dict, area_geom: dict) -> None:
@@ -192,7 +204,6 @@ class CoastSatRunnerDB():
         coordinates = geom_dict['coordinates']
         return np.array(coordinates)
 
-
     def save_profiles_to_db(self,gdf: gpd.GeoDataFrame):
         df = pd.DataFrame(gdf)
 
@@ -209,7 +220,8 @@ class CoastSatRunnerDB():
             con=engine,
             if_exists='append',
             index=False,
-            index_label='record_date'
+            index_label='record_date',
+            method=postgres_upsert
         )
     
     def save_intersects_to_db(self,intersects: pd.DataFrame):
@@ -240,7 +252,8 @@ class CoastSatRunnerDB():
             name='intersects',
             con=engine,
             if_exists='append',
-            index=False
+            index=False,
+            method=postgres_upsert
         )
 
     
