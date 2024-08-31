@@ -236,6 +236,10 @@ class CoastSatRunnerDB():
         intersects['profile_record_date'] = intersects['dates'].dt.strftime('%Y-%m-%d')
         intersects = intersects.drop(columns=['dates'])       
 
+        sql_query = text("SELECT record_date FROM profiles WHERE shoreline_sitename = :sitename AND record_date BETWEEN :startdate AND :enddate")
+        params = { 'sitename': self.sitename, 'startdate': self.startDate, 'enddate': self.endDate }
+        sitename_profiles = pd.read_sql(sql_query, engine, params=params)
+
         intersects_melted = pd.melt(intersects, id_vars=['profile_record_date'], var_name='transect_name', value_name='distance')
         intersects_melted['shoreline_sitename'] = self.sitename
 
@@ -247,9 +251,17 @@ class CoastSatRunnerDB():
             how='right'                    # Join type
         )
 
+        profiles_transects_intersects = pd.merge(
+            transects_intersects_melted,
+            sitename_profiles,
+            left_on='profile_record_date',
+            right_on='record_date',
+            how='left'
+        )
+
         keep_columns = ['profile_record_date', 'transect_id', 'distance', 'shoreline_sitename']
-        transects_intersects_melted = transects_intersects_melted[keep_columns]
-        transects_intersects_melted.to_sql(
+        intersects = profiles_transects_intersects[keep_columns]
+        intersects.to_sql(
             name='intersects',
             con=engine,
             if_exists='append',
