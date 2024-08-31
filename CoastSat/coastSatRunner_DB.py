@@ -243,6 +243,8 @@ class CoastSatRunnerDB():
         intersects_melted = pd.melt(intersects, id_vars=['profile_record_date'], var_name='transect_name', value_name='distance')
         intersects_melted['shoreline_sitename'] = self.sitename
 
+
+
         # see schema
         transects_intersects_melted = pd.merge(
             sitename_transects,           # Left DataFrame
@@ -251,12 +253,14 @@ class CoastSatRunnerDB():
             how='right'                    # Join type
         )
 
+        sitename_profiles['record_date_str'] = sitename_profiles['record_date'].astype(str)
+        transects_intersects_melted['record_date_str'] = transects_intersects_melted['profile_record_date'].astype(str)
+
         profiles_transects_intersects = pd.merge(
             transects_intersects_melted,
             sitename_profiles,
-            left_on='profile_record_date',
-            right_on='record_date',
-            how='left'
+            on='record_date_str',
+            how='right'
         )
 
         keep_columns = ['profile_record_date', 'transect_id', 'distance', 'shoreline_sitename']
