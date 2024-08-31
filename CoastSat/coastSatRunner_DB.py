@@ -215,6 +215,7 @@ class CoastSatRunnerDB():
         df = df.drop(columns=['date', 'geometry'])       
 
         engine = create_engine(self.connstring)
+        df = df.drop_duplicates(subset=['record_date'])
         df.to_sql(
             name='profiles',
             con=engine,
