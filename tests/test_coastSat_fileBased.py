@@ -1,4 +1,4 @@
-from CoastSat import initializeCoastSatRunner, assertfile_type_and_exists, CoastSatRunner
+from CoastSat import initializeCoastSatRunnerFileBased, assertfile_type_and_exists, CoastSatRunnerFileBased
 from unittest.mock import Mock, patch
 
 def test_assertfile_type_and_exists():
@@ -69,9 +69,9 @@ def test_initializeCoastSatRunner():
 
     with patch("os.path.isfile", return_value=True):
         with patch("os.path.isdir", return_value=True):
-            coastSatRunner = initializeCoastSatRunner(args)
+            coastSatRunner = initializeCoastSatRunnerFileBased(args)
 
-            assert isinstance(coastSatRunner, CoastSatRunner)
+            assert isinstance(coastSatRunner, CoastSatRunnerFileBased)
             assert coastSatRunner.startDate == startDate   
             assert coastSatRunner.endDate == endDate
             assert coastSatRunner.savePath == savePath
@@ -85,5 +85,3 @@ def test_initializeCoastSatRunner():
             assert coastSatRunner.epsg == epsg
             assert coastSatRunner.path_to_transects == transects
             assert coastSatRunner.path_to_tides == tides
-
-

@@ -11,7 +11,7 @@ import ast
 
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
 
-class CoastSatRunner():
+class CoastSatRunnerFileBased():
     def __init__(
         self,
         startDate,
@@ -177,7 +177,7 @@ def assert_dir_exists(dir_path):
     if not exists:
         sys.exit((1,f"cant find dir {dir_path}"))
 
-def initializeCoastSatRunner(_args) ->  CoastSatRunner:
+def initializeCoastSatRunnerFileBased(_args) ->  CoastSatRunnerFileBased:
     parser = argparse.ArgumentParser(
         prog="Coastsat",
         description="process shoreline data"
@@ -211,7 +211,7 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     assertfile_type_and_exists(path_to_shoreline, ".pkl")
     assertfile_type_and_exists(save_path, ".csv", assert_exist=False)
     
-    coastSatRunner = CoastSatRunner(
+    coastSatRunner = CoastSatRunnerFileBased(
     args.startDate,
     args.endDate,
     args.save_path,
@@ -226,5 +226,5 @@ def initializeCoastSatRunner(_args) ->  CoastSatRunner:
     return coastSatRunner
 
 if __name__ == "__main__":
-    coastSatRunner = initializeCoastSatRunner(sys.argv[1:])
+    coastSatRunner = initializeCoastSatRunnerFileBased(sys.argv[1:])
     coastSatRunner.run()

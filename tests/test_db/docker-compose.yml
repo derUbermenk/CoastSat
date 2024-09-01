@@ -1,0 +1,21 @@
+services:
+  shoreline_db_test:
+    image: postgis/postgis:13-3.4
+    environment:
+      - POSTGRES_USER=shoreline
+      - POSTGRES_PASSWORD=shoreline
+      - POSTGRES_DB=shoreline_test
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./test_schema:/docker-entrypoint-initdb.d/
+    
+  pgadmin_test:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@shoreline.com 
+      PGADMIN_DEFAULT_PASSWORD: admin 
+    ports:
+      - "81:80"
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin

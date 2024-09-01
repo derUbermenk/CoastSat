@@ -1,0 +1,187 @@
+from CoastSat import initializeCoastSatRunnerDB, CoastSatRunnerDB, Baseline 
+from unittest.mock import Mock, patch
+from sqlalchemy import create_engine, text
+import pandas as pd
+import numpy as np
+
+
+def test_initializeCoastSatRunner():
+    startDate = "2024-01-01"
+    endDate = "2024-02-01"
+    sitename = "TEST1"
+    epsg = "3005"
+    tides = "/data/tides.csv"
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+
+    args = [
+        startDate,
+        endDate,
+        sitename,
+        epsg,
+        tides,
+        connstring
+    ]
+
+    with patch("os.path.isfile", return_value=True):
+        with patch("os.path.isdir", return_value=True):
+            coastSatRunner = initializeCoastSatRunnerDB(args)
+
+            assert isinstance(coastSatRunner, CoastSatRunnerDB)
+            assert coastSatRunner.startDate == startDate   
+            assert coastSatRunner.endDate == endDate
+            assert coastSatRunner.sitename == sitename
+            assert coastSatRunner.epsg == epsg 
+            assert coastSatRunner.tides == tides
+            assert coastSatRunner.connstring == connstring 
+
+def test_retrieve_base_shoreline():
+    shoreline_baseline_coordinates = [
+            [1007671.0201, 455030.6850],
+            [1007738.1499, 455136.2692],
+            [1007735.6044, 455475.0194],
+            [1007659.8639, 455679.7725],
+            [1007582.0699, 455898.7145],
+            [1007518.5850, 456095.3603],
+            [1007308.3600, 456271.5097]
+    ]
+
+    shoreline_area_coordinates=[[ 
+        [144.7948, 13.4293], 
+        [144.8004, 13.4286], 
+        [144.7853, 13.4205],  
+        [144.7948, 13.4293], 
+    ]]
+
+    expected_baseline = {"type":"LineString","coordinates": shoreline_baseline_coordinates}
+    expected_area = {"type":"Polygon","coordinates": shoreline_area_coordinates}
+
+    expected_base_shoreline = Baseline("TEST1", expected_baseline, expected_area)
+
+    csRunner = CoastSatRunnerDB(
+        "2024-01-01",
+        "2024-02-01",
+        "TEST1",
+        "3005",
+        "/data/tides.csv",
+        "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    )
+
+    base_shoreline = csRunner.retrieve_base_shoreline()
+    assert base_shoreline.sitename == expected_base_shoreline.sitename
+    assert base_shoreline.baseline_geom == expected_base_shoreline.baseline_geom
+    assert base_shoreline.area_geom == expected_base_shoreline.area_geom
+
+def test_retrieve_transects():
+    expected_transects = {
+        'T1': np.array([[1007639.722662, 456334.414515000011306], [1006898.373719, 456033.745684999972582]]),
+        'T2': np.array([[1007756.983505, 456045.288427], [1007015.634563, 455744.619597000011709]]),
+        'T3': np.array([[1007918.593002, 455646.813371], [1007177.244059, 455346.14454]]),
+        'T4': np.array([[1008108.766037, 455177.910164], [1007367.417094, 454877.241334000020288]])
+    }
+
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    csRunner = CoastSatRunnerDB(
+            "2024-01-01",
+            "2024-02-01",
+            "TEST2",
+            "3005",
+            "/data/tides.csv",
+            connstring 
+        )
+
+    transects = csRunner.retrieve_transects()
+    assert transects, expected_transects
+
+
+def test_save_profiles_to_db():
+
+    # Define the data
+    data = {
+        'geometry': [None] * 7,  # Assuming geometry is not provided here, hence set to None
+        'date': [
+            '2019-12-02 23:56:06',
+            '2019-12-16 00:06:02',
+            '2019-12-17 23:56:06',
+            '2019-12-21 00:06:02',
+            '2019-12-26 00:06:03',
+            '2019-12-27 23:56:07',
+            '2019-12-31 00:06:02'
+        ],
+        'satname': ['S2'] * 7,
+        'geoaccuracy': ['PASSED'] * 7,
+        'cloud_cover': [
+            0,
+            0.41537095271372,
+            0,
+            0.0404583042161659,
+            0,
+            0,
+            0.0552061495457722
+        ]
+    }
+
+    # Create the DataFrame
+    gdf = pd.DataFrame(data)
+
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    csRunner = CoastSatRunnerDB(
+        "2024-01-01",
+        "2024-02-01",
+        "TEST1",
+        "3005",
+        "/data/tides.csv",
+        connstring 
+    )
+
+    engine = create_engine(connstring)
+    with engine.begin() as connection:
+        connection.execute(text("DELETE FROM profiles WHERE shoreline_sitename = 'TEST1'"))
+        results = connection.execute(text("SELECT * FROM profiles WHERE shoreline_sitename = 'TEST1'"))
+        rows = results.fetchall()
+        assert not rows
+
+        csRunner.save_profiles_to_db(gdf) 
+        results = connection.execute(text("SELECT * FROM profiles WHERE shoreline_sitename = 'TEST1'"))
+        rows = results.fetchall()
+        assert rows
+        connection.execute(text("DELETE FROM profiles WHERE shoreline_sitename = 'TEST1'"))
+
+
+def test_save_intersects_to_db():
+    intersect_data = {
+        'dates': [
+            '2024-01-06 19:40:54+00:00',
+            '2024-01-11 19:40:55+00:00',
+            '2024-01-12 19:40:55+00:00'
+        ],
+        'T1': [10, 15, 5],
+        'T2': [20, 25, 6],
+        'T3': [15, 17, 8]
+    }
+
+    df = pd.DataFrame(intersect_data)
+
+    connstring = "postgresql://shoreline:shoreline@localhost:5436/shoreline_test"
+    csRunner = CoastSatRunnerDB(
+        "2024-01-01",
+        "2024-02-01",
+        "TEST2",
+        "3005",
+        "/data/tides.csv",
+        connstring 
+    )
+
+    # cleanup
+    engine = create_engine(connstring)
+    with engine.begin() as connection:
+        connection.execute(text("DELETE FROM intersects"))
+        results = connection.execute(text("SELECT * FROM intersects"))
+        rows = results.fetchall()
+        assert not rows
+
+        csRunner.save_intersects_to_db(df) 
+        results = connection.execute(text("SELECT * FROM intersects WHERE shoreline_sitename = 'TEST2'"))
+        rows = results.fetchall()
+        
+        assert rows
+        connection.execute(text("DELETE FROM intersects;"))
