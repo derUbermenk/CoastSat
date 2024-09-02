@@ -17,16 +17,19 @@ from sqlalchemy.orm import sessionmaker
 
 from coastsat import SDS_download, SDS_shoreline, SDS_tools, SDS_transects
 
-def postgres_upsert(table, conn, keys, data_iter):
+def postgres_upsert(constraint):
+    def postgres_upsert_(table, conn, keys, data_iter):
 
-    data = [dict(zip(keys, row)) for row in data_iter]
+        data = [dict(zip(keys, row)) for row in data_iter]
 
-    insert_statement = insert(table.table).values(data)
-    upsert_statement = insert_statement.on_conflict_do_update(
-        constraint=f"{table.table.name}_pkey",
-        set_={c.key: c for c in insert_statement.excluded},
-    )
-    conn.execute(upsert_statement)
+        insert_statement = insert(table.table).values(data)
+        upsert_statement = insert_statement.on_conflict_do_update(
+            constraint=constraint,
+            set_={c.key: c for c in insert_statement.excluded},
+        )
+        conn.execute(upsert_statement)
+
+    return postgres_upsert_
 
 class Baseline():
     def __init__(self, sitename: str, baseline_geom: dict, area_geom: dict) -> None:
@@ -222,7 +225,7 @@ class CoastSatRunnerDB():
             if_exists='append',
             index=False,
             index_label='record_date',
-            method=postgres_upsert
+            method=postgres_upsert('profiles_pkey')
         )
     
     def save_intersects_to_db(self,intersects: pd.DataFrame):
@@ -270,7 +273,7 @@ class CoastSatRunnerDB():
             con=engine,
             if_exists='append',
             index=False,
-            method=postgres_upsert
+            method=postgres_upsert("unique_shoreline_transect")
         )
 
     
