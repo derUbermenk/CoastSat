@@ -291,11 +291,15 @@ class CoastSatRunnerDB():
 
         # save to csv
         gdf = SDS_tools.output_to_gdf(output, 'lines')
-        if gdf:
-            self.save_profiles_to_db(gdf)
-            self.save_intersects_to_db(tidal_corrected_df)
-        else:
+        if gdf is None:
             print("no shorelines mapped")
+        else:
+            self.save_profiles_to_db(gdf)
+        
+            if tidal_corrected_df.empty:
+                print("no intersects mapped")
+            else:
+                self.save_intersects_to_db(tidal_corrected_df)
 
 def assertfile_type_and_exists(file_path, expected_extension, assert_exist = True):
     if assert_exist:
