@@ -42,7 +42,7 @@ CREATE TABLE Intersects (
     distance DOUBLE PRECISION NOT NULL,
     geom geometry(POINT),
 
-    CONSTRAINT unique_id_transect_shoreline UNIQUE(id, profile_record_date, transect_id)
+    CONSTRAINT unique_shoreline_transect UNIQUE(id, profile_record_date, transect_id)
 );
 
 INSERT INTO Shorelines (sitename, baseline, area)
