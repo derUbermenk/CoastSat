@@ -82,7 +82,9 @@ def retrieve_images(inputs):
     
     # initialise connection with GEE server
     service_account = os.getenv('SERVICE_ACCOUNT_EMAIL') # see service account for email
-    credentials = ee.ServiceAccountCredentials(service_account, '/gcloud_cli_auth.json')
+    key_file = os.getenv('GOOGLE_APPLICATION_CREDENTIALS') 
+    credentials = ee.ServiceAccountCredentials(service_account, key_file)
+    service_account = os.getenv('SERVICE_ACCOUNT_EMAIL')
     ee.Initialize(credentials)
 
     # check image availabiliy and retrieve list of images
