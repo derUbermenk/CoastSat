@@ -4,6 +4,7 @@ from the Google Earth Engine server
 
 Author: Kilian Vos, Water Research Laboratory, University of New South Wales
 """
+from packaging import version
 
 
 # load basic modules
@@ -799,7 +800,8 @@ def download_tif(image, polygon, bands, filepath, satname):
     """
 
     # for the old version of ee raise an exception
-    if int(ee.__version__[-3:]) <= 201:
+    # if int(ee.__version__[-3:]) <= 201:
+    if version.parse(ee.__version__) <= version.parse('0.1.201'):
         raise Exception('CoastSat2.0 and above is not compatible with earthengine-api version below 0.1.201.' +\
                         'Try downloading a previous CoastSat version (1.x).')
     # for the newer versions of ee
